@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prom
+  labels: 
+    app: prom
+spec:
+  #serviceName: elastic-search-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prom
+  template:
+    metadata:
+      labels:
+        app: prom
+    spec:
+        containers:
+        - name: prometheus
+          image: prom/prometheus
+          imagePullPolicy: IfNotPresent    
+          ports:
+          - containerPort: 9090
+          volumeMounts: 
+            - name: data
+              mountPath: /etc/prometheus
+        volumes:
+        - name: data
+          configMap:
+            name: prom-conf
+            items:
+              - key: prometheus.yml
+                path: prometheus.yml
